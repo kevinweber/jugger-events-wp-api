@@ -15,67 +15,65 @@
  *
  */
 
-class JuggerEventsController extends WP_REST_Posts_Controller {
+abstract class JuggerEventsController extends WP_REST_Posts_Controller {
 
 	/**
 	 * The namespace.
 	 *
-	 * @var string
+	 * @var String
 	 */
 	protected $namespace = 'jugger';
 
  	/**
  	 * The post type for the current object.
  	 *
- 	 * @var string
+ 	 * @var String
  	 */
  	protected $postType = 'jugger-event';
 
  	/**
  	 * Rest base for the current object.
  	 *
- 	 * @var string
+ 	 * @var String
  	 */
  	protected $restBase;
 
 	/**
 	 * Determine how long endpoint data is cached.
 	 *
-	 * @var int
+	 * @var Integer
 	 */
 	protected $cacheLength = 60 * 60 * 2;
 
-	// /**
-	// * Add REST API support to an already registered post type.
-	// */
-	//
-	// function register_custom_post_types() {
-	// 	global $wp_post_types;
-	//
-	//   if( isset( $wp_post_types[ $this->post_type ] ) ) {
-	//   	$wp_post_types[$this->post_type]->show_in_rest = true;
-	//   }
-	// }
+	/**
+	 * Define order of provided events.
+	 *
+	 * @var String<'ASC'|'DESC'>
+	 */
+	protected $order = 'ASC';
+
+	/**
+	 * WordPress posts that should be exposed.
+	 *
+	 * @var Array
+	 */
+	protected $posts = [];
+	abstract function setPosts();
+
 
 	function init() {
+		$this->posts = $this->setPosts();
 		$this->registerCustomRouteEvents();
 	}
 
 	function registerCustomRouteEvents() {
   	register_rest_route( $this->namespace, '/' . $this->restBase, array(
 	 	 'methods'  => WP_REST_Server::READABLE,
-     'callback' => array( $this, 'jugger_events_all' ),
+     'callback' => array( $this, 'createEvents' ),
 	 	));
 	}
 
-	function getAllEvents() {
-		return get_posts( array(
-				'posts_per_page' => -1,
-				'post_type' => $this->postType
-		));
-	}
-
-	static function validate($object, $property = null, $offset = null) {
+	function validate($object, $property = null, $offset = null) {
 		if (!is_null($property) && isset($object[$property]) && !is_null($offset)) {
 			return $object[$property][$offset];
 		} else if (!is_null($object) && isset($object[$property])) {
@@ -90,7 +88,7 @@ class JuggerEventsController extends WP_REST_Posts_Controller {
 			$t1 = strtotime($a[$sortByProperty]);
 			$t2 = strtotime($b[$sortByProperty]);
 
-			return $t1 - $t2;
+			return $this->order == 'ASC' ? $t1 - $t2 : $t2 - $t1;
     });
 	}
 
@@ -115,9 +113,9 @@ class JuggerEventsController extends WP_REST_Posts_Controller {
 		];
 	}
 
-	function jugger_events_all(WP_REST_Request $request) {
+	function createEvents(WP_REST_Request $request) {
 	   if ( false === ( $all_events = get_transient( TRANSIENT_JUGGER_EVENTS_ALL ) ) ) {
-	       $all_events = $this->getAllEvents();
+	       $all_events = $this->posts;
 				 $new_events_object = [];
 
 				foreach ($all_events as $post) {
@@ -126,9 +124,7 @@ class JuggerEventsController extends WP_REST_Posts_Controller {
 					array_push($new_events_object, $new_event);
 				}
 
-				// Sort array by date with the latest event last
 				$this->sortByDate($new_events_object, "dateTimeStart");
-
 				$all_events = $new_events_object;
 
 	      // Cache for 2 hours
