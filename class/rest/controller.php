@@ -35,7 +35,7 @@ abstract class JuggerEventsController extends WP_REST_Posts_Controller {
 	 *
 	 * @var Integer
 	 */
-	protected $cacheLength = 60 * 60 * 2;
+	protected $cacheLength = 60 * 2;	// 60s * 2
 
 	/**
 	 * Define order of provided events.
