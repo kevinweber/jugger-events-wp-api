@@ -29,14 +29,21 @@ class JuggerEventsController extends WP_REST_Posts_Controller {
  	 *
  	 * @var string
  	 */
- 	protected $post_type = 'jugger-event';
+ 	protected $postType = 'jugger-event';
 
  	/**
  	 * Rest base for the current object.
  	 *
  	 * @var string
  	 */
- 	protected $rest_base;
+ 	protected $restBase;
+
+	/**
+	 * Determine how long endpoint data is cached.
+	 *
+	 * @var int
+	 */
+	protected $cacheLength = 60 * 60 * 2;
 
 	// /**
 	// * Add REST API support to an already registered post type.
@@ -55,7 +62,7 @@ class JuggerEventsController extends WP_REST_Posts_Controller {
 	}
 
 	function registerCustomRouteEvents() {
-  	register_rest_route( $this->namespace, '/' . $this->rest_base, array(
+  	register_rest_route( $this->namespace, '/' . $this->restBase, array(
 	 	 'methods'  => WP_REST_Server::READABLE,
      'callback' => array( $this, 'jugger_events_all' ),
 	 	));
@@ -64,7 +71,7 @@ class JuggerEventsController extends WP_REST_Posts_Controller {
 	function getAllEvents() {
 		return get_posts( array(
 				'posts_per_page' => -1,
-				'post_type' => $this->post_type
+				'post_type' => $this->postType
 		));
 	}
 
@@ -126,7 +133,7 @@ class JuggerEventsController extends WP_REST_Posts_Controller {
 
 	      // Cache for 2 hours
 	      // Change "TRANSIENT_JUGGER_EVENTS_ALL" (in wp-config.php) to no longer access cached content
-	      set_transient( TRANSIENT_JUGGER_EVENTS_ALL, $all_events, 60*60*2 );
+	      set_transient( TRANSIENT_JUGGER_EVENTS_ALL, $all_events, $this->cacheLength );
 	   }
 
 	   return $all_events;
