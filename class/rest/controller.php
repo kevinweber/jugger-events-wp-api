@@ -134,4 +134,11 @@ abstract class JuggerEventsController extends WP_REST_Posts_Controller {
 
 	   return $all_events;
 	}
+
+	function getAllEvents() {
+		return get_posts( array(
+				'posts_per_page' => -1,
+				'post_type' => $this->postType
+		));
+	}
 }

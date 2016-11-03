@@ -11,11 +11,4 @@ class JuggerEventsEndpointEventsAll extends JuggerEventsController {
 	function setPosts() {
 		return $this->getAllEvents();
 	}
-
-	function getAllEvents() {
-		return get_posts( array(
-				'posts_per_page' => -1,
-				'post_type' => $this->postType
-		));
-	}
 }
