@@ -3,6 +3,7 @@
 class JuggerEventsEndpointEventsUpcoming extends JuggerEventsController {
 
 	protected $restBase = 'events/upcoming';
+	protected $transient = TRANSIENT_JUGGER_EVENTS_UPCOMING;
 
 	function __construct() {
 		add_action( 'rest_api_init', array( $this, 'init' ) );

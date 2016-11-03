@@ -5,14 +5,6 @@
 
 /**
  * Extend the main WP_REST_Posts_Controller to a private endpoint controller.
- *
- * Transients must be defined as follows, e.g. in wp-config.php:
- *  **
- *  * Transients.
- *  * Used for cache (in)validation.
- *  *
- *  define('TRANSIENT_JUGGER_EVENTS_ALL', 'my-random-transient-123');
- *
  */
 
 abstract class JuggerEventsController extends WP_REST_Posts_Controller {
@@ -59,6 +51,18 @@ abstract class JuggerEventsController extends WP_REST_Posts_Controller {
 	 */
 	protected $posts = [];
 	abstract function setPosts();
+
+	/**
+	 * WordPress transient for cache (in)validation.
+	 *
+	 * Transients must be defined as follows, e.g. in wp-config.php:
+	 *
+	 *  define('TRANSIENT_JUGGER_EVENTS_ALL', 'my-random-transient-123');
+	 *
+	 *
+	 * @var String|Integer
+	 */
+	protected $transient = TRANSIENT_JUGGER_EVENTS_DEFAULT;
 
 
 	function init() {
@@ -114,7 +118,7 @@ abstract class JuggerEventsController extends WP_REST_Posts_Controller {
 	}
 
 	function createEvents(WP_REST_Request $request) {
-	   if ( false === ( $all_events = get_transient( TRANSIENT_JUGGER_EVENTS_ALL ) ) ) {
+	   if ( false === ( $all_events = get_transient( $this->transient ) ) ) {
 	       $all_events = $this->posts;
 				 $new_events_object = [];
 
@@ -129,7 +133,7 @@ abstract class JuggerEventsController extends WP_REST_Posts_Controller {
 
 	      // Cache for 2 hours
 	      // Change "TRANSIENT_JUGGER_EVENTS_ALL" (in wp-config.php) to no longer access cached content
-	      set_transient( TRANSIENT_JUGGER_EVENTS_ALL, $all_events, $this->cacheLength );
+	      set_transient( $this->transient, $all_events, $this->cacheLength );
 	   }
 
 	   return $all_events;
