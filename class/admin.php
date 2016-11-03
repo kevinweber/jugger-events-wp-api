@@ -25,5 +25,8 @@ class JuggerEventsAPI {
 
 		include JUGGER_EVENTS_API_PATH . 'class/endpoints/events-upcoming.php';
 		new JuggerEventsEndpointEventsUpcoming();
+
+		include JUGGER_EVENTS_API_PATH . 'class/endpoints/events-past.php';
+		new JuggerEventsEndpointEventsPast();
 	}
 }
