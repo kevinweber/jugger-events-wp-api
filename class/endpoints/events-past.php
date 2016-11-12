@@ -6,10 +6,6 @@ class JuggerEventsEndpointEventsPast extends JuggerEventsController {
 	protected $order = 'DESC';
 	protected $transient = TRANSIENT_JUGGER_EVENTS_PAST;
 
-	function __construct() {
-		add_action( 'rest_api_init', array( $this, 'init' ) );
-	}
-
 	function setPosts() {
 		return $this->getPastEvents();
 	}

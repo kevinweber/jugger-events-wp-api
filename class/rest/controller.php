@@ -64,10 +64,22 @@ abstract class JuggerEventsController extends WP_REST_Posts_Controller {
 	 */
 	protected $transient = TRANSIENT_JUGGER_EVENTS_DEFAULT;
 
+	function __construct() {
+		add_action( 'save_post', array( $this, 'invalidateCache' ), 10, 3 );
+		add_action( 'rest_api_init', array( $this, 'init' ) );
+	}
 
 	function init() {
 		$this->posts = $this->setPosts();
 		$this->registerCustomRouteEvents();
+	}
+
+	function invalidateCache($post_id, $post, $update) {
+		$post_type = get_post_type($post_id);
+
+		if ( $this->postType == $post_type ) {
+			delete_transient($this->transient);
+		}
 	}
 
 	function registerCustomRouteEvents() {
