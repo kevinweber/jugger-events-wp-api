@@ -117,7 +117,7 @@ abstract class JuggerEventsController {
 				"dateTimeStart" => $this->validate($post_meta, "jugger_event_datetime_start", 0),
 				"dateTimeEnd" => $this->validate($post_meta, "jugger_event_datetime_end", 0),
 				"description" => $this->validate($post->post_content),
-				"link" => $this->validate($post->guid),
+				"link" => $this->validate($post_meta, "jugger_event_event_link", 0),
 				"location" => [
 					"address" => $this->validate($post_meta, "jugger_event_address", 0),
 					"latitude" => $coordinates[0],
