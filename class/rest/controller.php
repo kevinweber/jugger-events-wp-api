@@ -7,7 +7,7 @@
  * Extend the main WP_REST_Posts_Controller to a private endpoint controller.
  */
 
-abstract class JuggerEventsController extends WP_REST_Posts_Controller {
+abstract class JuggerEventsController {
 
 	/**
 	 * The namespace.
